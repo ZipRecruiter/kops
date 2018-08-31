@@ -60,7 +60,9 @@ func (b *KubeProxyOptionsBuilder) BuildOptions(o interface{}) error {
 	// * dns-controller talks to the API using the kube-proxy configured kubernetes service
 
 	if config.ClusterCIDR == "" {
-		if clusterSpec.KubeControllerManager != nil {
+		// Omit ClusterCIDR on kube-proxy when using VPC CNI networking, because pod IPs are real
+		// and routable within a VPC, which should never be distinguished from non-pod IP addresses.
+		if clusterSpec.KubeControllerManager != nil && clusterSpec.Networking.AmazonVPC == nil {
 			config.ClusterCIDR = clusterSpec.KubeControllerManager.ClusterCIDR
 		}
 	}

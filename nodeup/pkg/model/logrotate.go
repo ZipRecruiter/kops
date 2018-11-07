@@ -129,6 +129,7 @@ func (b *LogrotateBuilder) addLogRotate(c *fi.ModelBuilderContext, name, path st
 		"  notifempty",
 		"  delaycompress",
 		"  maxsize " + options.MaxSize,
+		"  dateformat -%Y%m%d-%s",
 		"  daily",
 		"  create 0644 root root",
 		"}",

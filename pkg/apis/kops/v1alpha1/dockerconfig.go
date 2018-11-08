@@ -34,6 +34,8 @@ type DockerConfig struct {
 	Experimental *bool `json:"experimental,omitempty" flag:"experimental"`
 	// Hosts enables you to configure the endpoints the docker daemon listens on i.e. tcp://0.0.0.0.2375 or unix:///var/run/docker.sock etc
 	Hosts []string `json:"hosts,omitempty" flag:"host,repeat"`
+	// Init runs an init in the container to forward signals and reap processes
+	Init *bool `json:"init,omitempty" flag:"init"`
 	// IPMasq enables ip masquerading for containers
 	IPMasq *bool `json:"ipMasq,omitempty" flag:"ip-masq"`
 	// IPtables enables addition of iptables rules

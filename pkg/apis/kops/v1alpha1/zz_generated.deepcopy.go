@@ -867,6 +867,15 @@ func (in *DockerConfig) DeepCopyInto(out *DockerConfig) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.Init != nil {
+		in, out := &in.Init, &out.Init
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(bool)
+			**out = **in
+		}
+	}
 	if in.IPMasq != nil {
 		in, out := &in.IPMasq, &out.IPMasq
 		*out = new(bool)

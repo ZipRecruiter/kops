@@ -168,6 +168,8 @@ type ClusterSpec struct {
 	DisableSubnetTags bool `json:"DisableSubnetTags,omitempty"`
 	// Target allows for us to nest extra config for targets such as terraform
 	Target *TargetSpec `json:"target,omitempty"`
+	// BootstrapScripts are bootstrapping scripts that run before nodeup.
+	BootstrapScripts []BootstrapScriptSpec `json:"bootstrapScripts,omitempty"`
 }
 
 // NodeAuthorizationSpec is used to node authorization
@@ -482,4 +484,11 @@ type TerraformSpec struct {
 
 func (t *TerraformSpec) IsEmpty() bool {
 	return t.ProviderExtraConfig == nil
+}
+
+// BootstrapScriptSpec runs a bootstrapping script on the cluster.
+type BootstrapScriptSpec struct {
+	Name string `json:"name,omitempty"`
+	URL  string `json:"url,omitempty"`
+	Hash string `json:"hash,omitempty"`
 }

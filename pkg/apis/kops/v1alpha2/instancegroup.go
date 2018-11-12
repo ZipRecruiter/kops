@@ -138,6 +138,8 @@ type InstanceGroupSpec struct {
 	IAM *IAMProfileSpec `json:"iam,omitempty"`
 	// SecurityGroupOverride overrides the default security group created by Kops for this IG (AWS only).
 	SecurityGroupOverride *string `json:"securityGroupOverride,omitempty"`
+	// BootstrapScripts are bootstrapping scripts that run before nodeup.
+	BootstrapScripts []BootstrapScriptSpec `json:"bootstrapScripts,omitempty"`
 }
 
 const (

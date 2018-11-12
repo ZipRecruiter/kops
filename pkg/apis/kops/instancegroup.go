@@ -125,6 +125,8 @@ type InstanceGroupSpec struct {
 	IAM *IAMProfileSpec `json:"iam,omitempty"`
 	// SecurityGroupOverride overrides the default security group created by Kops for this IG (AWS only).
 	SecurityGroupOverride *string `json:"securityGroupOverride,omitempty"`
+	// StorageTopology overrides the storage topology of instances in this IG (AWS only).
+	StorageTopologies []StorageTopologySpec `json:"storageTopologies,omitempty"`
 }
 
 // UserData defines a user-data section
@@ -218,4 +220,39 @@ type LoadBalancer struct {
 	LoadBalancerName *string `json:"loadBalancerName,omitempty"`
 	// TargetGroupARN to associate with this instance group (AWS ALB/NLB)
 	TargetGroupARN *string `json:"targetGroupArn,omitempty"`
+}
+
+// StorageTopologySpec describes the storage topology of instances in an
+// instance group.
+type StorageTopologySpec struct {
+	// Name is the name of the topology
+	Name string `json:"name,omitempty"`
+	// Type is the topology type, one of: InstanceStoreArray.
+	Type string `json:"type,omitempty"`
+	// InstanceStoreArray is the configuration for Type of InstanceStoreArray.
+	InstanceStoreArray *InstanceStoreArraySpec `json:"instanceStoreArray,omitempty"`
+}
+
+// InstanceStoreArraySpec describes the RAID-backed topology.
+type InstanceStoreArraySpec struct {
+	// MdadmOptions are optional flags for mdadm(8).
+	MdadmOptions *MdadmOptionsSpec `json:"mdadmOptions,omitempty"`
+	// MountOptions are mount options for mount(8).
+	MountOptions []string `json:"mountOptions,omitempty"`
+	// MountPath used for mount(8).
+	MountPath *string `json:"mountPath,omitempty"`
+	// Wipe whether to wipe the underlying devices.
+	Wipe *bool `json:"wipe,omitempty"`
+}
+
+// MdadmOptionsSpec are optional flags for mdadm(8)
+type MdadmOptionsSpec struct {
+	// Chunk size in kibibytes, defaults to 512KiB.
+	Chunk *string `json:"chunk,omitempty" flag:"chunk"`
+	// Force mdadm(8) to accept geometry specs as-is.
+	Force *bool `json:"force,omitempty" flag:"force"`
+	// Level is the RAID level, one of: linear, raid0, stripe, raid1, mirror, raid4, raid5, raid6, raid10.
+	Level *string `json:"level,omitempty" flag:"level"`
+	// Metadata style for RAID.
+	Metadata *string `json:"metadata,omitempty" flag:"metadata"`
 }

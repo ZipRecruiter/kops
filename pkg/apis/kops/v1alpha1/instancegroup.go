@@ -229,10 +229,3 @@ type LoadBalancer struct {
 	// TargetGroupARN to associate with this instance group (AWS ALB/NLB)
 	TargetGroupARN *string `json:"targetGroupArn,omitempty"`
 }
-
-// BootstrapScriptSpec runs a bootstrapping script on the cluster.
-type BootstrapScriptSpec struct {
-	Name string `json:"name,omitempty"`
-	URL  string `json:"url,omitempty"`
-	Hash string `json:"hash,omitempty"`
-}

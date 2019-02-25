@@ -214,6 +214,7 @@ type ProtokubeFlags struct {
 	PeerTLSCaFile             *string  `json:"peer-ca,omitempty" flag:"peer-ca"`
 	PeerTLSCertFile           *string  `json:"peer-cert,omitempty" flag:"peer-cert"`
 	PeerTLSKeyFile            *string  `json:"peer-key,omitempty" flag:"peer-key"`
+	Route53AssumeRoleARN      *string  `json:"route53AssumeRoleARN,omitempty" flag:"route53-assume-role-arn"`
 	TLSAuth                   *bool    `json:"tls-auth,omitempty" flag:"tls-auth"`
 	TLSCAFile                 *string  `json:"tls-ca,omitempty" flag:"tls-ca"`
 	TLSCertFile               *string  `json:"tls-cert,omitempty" flag:"tls-cert"`

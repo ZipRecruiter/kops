@@ -18,6 +18,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -36,7 +37,7 @@ import (
 	// Load DNS plugins
 	"github.com/golang/glog"
 	"github.com/spf13/pflag"
-	_ "k8s.io/kops/dnsprovider/pkg/dnsprovider/providers/aws/route53"
+	"k8s.io/kops/dnsprovider/pkg/dnsprovider/providers/aws/route53"
 	k8scoredns "k8s.io/kops/dnsprovider/pkg/dnsprovider/providers/coredns"
 	_ "k8s.io/kops/dnsprovider/pkg/dnsprovider/providers/google/clouddns"
 )
@@ -65,6 +66,7 @@ func run() error {
 	var flagChannels, tlsCert, tlsKey, tlsCA, peerCert, peerKey, peerCA string
 	var etcdBackupImage, etcdBackupStore, etcdImageSource, etcdElectionTimeout, etcdHeartbeatInterval string
 	var dnsUpdateInterval int
+	var route53AssumeRoleARN string
 
 	flag.BoolVar(&applyTaints, "apply-taints", applyTaints, "Apply taints to nodes based on the role")
 	flag.BoolVar(&containerized, "containerized", containerized, "Set if we are running containerized.")
@@ -92,6 +94,7 @@ func run() error {
 	flags.StringVar(&etcdElectionTimeout, "etcd-election-timeout", etcdElectionTimeout, "time in ms for an election to timeout")
 	flags.StringVar(&etcdHeartbeatInterval, "etcd-heartbeat-interval", etcdHeartbeatInterval, "time in ms of a heartbeat interval")
 	flags.StringVar(&gossipSecret, "gossip-secret", gossipSecret, "Secret to use to secure gossip")
+	flags.StringVar(&route53AssumeRoleARN, "route53-assume-role-arn", route53AssumeRoleARN, "The ARN of the role to assume for Route53 operations")
 
 	manageEtcd := false
 	flag.BoolVar(&manageEtcd, "manage-etcd", manageEtcd, "Set to manage etcd (deprecated in favor of etcd-manager)")
@@ -307,6 +310,17 @@ func run() error {
 				lines = append(lines, "zones = "+zones[0])
 				config := "[global]\n" + strings.Join(lines, "\n") + "\n"
 				file = bytes.NewReader([]byte(config))
+			} else if dnsProviderID == route53.ProviderName {
+				r53data := struct {
+					AssumeRoleARN string `json:"assume-role-arn,omitempty"`
+				}{
+					AssumeRoleARN: route53AssumeRoleARN,
+				}
+				b, err := json.Marshal(r53data)
+				if err != nil {
+					return err
+				}
+				file = bytes.NewReader(b)
 			}
 
 			dnsProvider, err := dnsprovider.GetDnsProvider(dnsProviderID, file)
@@ -371,6 +385,7 @@ func run() error {
 		TLSCA:                 tlsCA,
 		TLSCert:               tlsCert,
 		TLSKey:                tlsKey,
+		Route53AssumeRoleARN:  route53AssumeRoleARN,
 	}
 
 	k.Init(volumes)

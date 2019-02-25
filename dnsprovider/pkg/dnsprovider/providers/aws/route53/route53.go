@@ -18,9 +18,11 @@ limitations under the License.
 package route53
 
 import (
+	"encoding/json"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/route53"
@@ -53,17 +55,43 @@ func route53HandlerLogger(req *request.Request) {
 	glog.V(4).Infof("AWS request: %s %s", service, name)
 }
 
+type route53Spec struct {
+	AssumeRoleARN string `json:"assume-role-arn,omitempty"`
+}
+
 // newRoute53 creates a new instance of an AWS Route53 DNS Interface.
 func newRoute53(config io.Reader) (*Interface, error) {
-	// Connect to AWS Route53 - TODO: Do more sophisticated auth
+	var c route53Spec
+	d := json.NewDecoder(config)
+	if err := d.Decode(&c); err != nil {
+		return nil, err
+	}
 
 	awsConfig := aws.NewConfig()
-
 	// This avoids a confusing error message when we fail to get credentials
 	// e.g. https://github.com/kubernetes/kops/issues/605
 	awsConfig = awsConfig.WithCredentialsChainVerboseErrors(true)
 
-	svc := route53.New(session.New(), awsConfig)
+	sess, err := session.NewSession(awsConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.AssumeRoleARN != "" {
+		dnsCreds := stscreds.NewCredentials(sess, c.AssumeRoleARN, func(p *stscreds.AssumeRoleProvider) {
+			p.RoleSessionName = "dnsprovider"
+		})
+		if _, err := dnsCreds.Get(); err != nil {
+			return nil, err
+		}
+		dnsSess, err := session.NewSession(awsConfig.Copy(&aws.Config{Credentials: dnsCreds}))
+		if err != nil {
+			return nil, err
+		}
+		sess = dnsSess
+	}
+
+	svc := route53.New(sess)
 
 	// Add our handler that will log requests
 	svc.Handlers.Sign.PushFrontNamed(request.NamedHandler{

@@ -81,6 +81,8 @@ type KubeBoot struct {
 	PeerCert string
 	// PeerKey is the path to a peer private key for etcd
 	PeerKey string
+	// Route53AssumeRoleARN is the optional ARN for the AWS IAM Role to assume before Route53 operations
+	Route53AssumeRoleARN string
 
 	volumeMounter   *VolumeMountController
 	etcdControllers map[string]*EtcdController

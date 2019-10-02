@@ -170,6 +170,10 @@ type ClusterSpec struct {
 	DisableSubnetTags bool `json:"DisableSubnetTags,omitempty"`
 	// Target allows for us to nest extra config for targets such as terraform
 	Target *TargetSpec `json:"target,omitempty"`
+	// SysctlParameters will configure kernel parameters using sysctl(8). When
+	// specified, each parameter must follow the form variable=value, the way
+	// it would appear in sysctl.conf.
+	SysctlParameters []string `json:"sysctlParameters,omitempty"`
 }
 
 // NodeAuthorizationSpec is used to node authorization

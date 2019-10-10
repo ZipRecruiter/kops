@@ -176,6 +176,8 @@ type ClusterSpec struct {
 	// specified, each parameter must follow the form variable=value, the way
 	// it would appear in sysctl.conf.
 	SysctlParameters []string `json:"sysctlParameters,omitempty"`
+	// BootstrapScripts are bootstrapping scripts that run before nodeup.
+	BootstrapScripts []BootstrapScriptSpec `json:"bootstrapScripts,omitempty"`
 }
 
 // NodeAuthorizationSpec is used to node authorization
@@ -602,4 +604,31 @@ func (c *Cluster) FillDefaults() error {
 // SharedVPC is a simple helper function which makes the templates for a shared VPC clearer
 func (c *Cluster) SharedVPC() bool {
 	return c.Spec.NetworkID != ""
+}
+
+// IsKubernetesGTE checks if the version is >= the specified version.
+// It panics if the kubernetes version in the cluster is invalid, or if the version is invalid.
+func (c *Cluster) IsKubernetesGTE(version string) bool {
+	clusterVersion, err := util.ParseKubernetesVersion(c.Spec.KubernetesVersion)
+	if err != nil || clusterVersion == nil {
+		panic(fmt.Sprintf("error parsing cluster spec.kubernetesVersion %q", c.Spec.KubernetesVersion))
+	}
+
+	parsedVersion, err := util.ParseKubernetesVersion(version)
+	if err != nil {
+		panic(fmt.Sprintf("Error parsing version %s: %v", version, err))
+	}
+
+	// Ignore Pre & Build fields
+	clusterVersion.Pre = nil
+	clusterVersion.Build = nil
+
+	return clusterVersion.GTE(*parsedVersion)
+}
+
+// BootstrapScriptSpec runs a bootstrapping script on the cluster.
+type BootstrapScriptSpec struct {
+	Name string `json:"name,omitempty"`
+	URL  string `json:"url,omitempty"`
+	Hash string `json:"hash,omitempty"`
 }

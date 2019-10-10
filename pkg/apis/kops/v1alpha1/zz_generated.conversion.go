@@ -1753,6 +1753,8 @@ func autoConvert_v1alpha1_ClusterSpec_To_kops_ClusterSpec(in *ClusterSpec, out *
 	} else {
 		out.Target = nil
 	}
+	out.UseHostCertificates = in.UseHostCertificates
+	out.SysctlParameters = in.SysctlParameters
 	return nil
 }
 
@@ -2020,6 +2022,8 @@ func autoConvert_kops_ClusterSpec_To_v1alpha1_ClusterSpec(in *kops.ClusterSpec, 
 	} else {
 		out.Target = nil
 	}
+	out.UseHostCertificates = in.UseHostCertificates
+	out.SysctlParameters = in.SysctlParameters
 	return nil
 }
 
@@ -2762,6 +2766,7 @@ func autoConvert_v1alpha1_InstanceGroupSpec_To_kops_InstanceGroupSpec(in *Instan
 	}
 	out.SecurityGroupOverride = in.SecurityGroupOverride
 	out.InstanceProtection = in.InstanceProtection
+	out.SysctlParameters = in.SysctlParameters
 	return nil
 }
 
@@ -2883,6 +2888,7 @@ func autoConvert_kops_InstanceGroupSpec_To_v1alpha1_InstanceGroupSpec(in *kops.I
 	}
 	out.SecurityGroupOverride = in.SecurityGroupOverride
 	out.InstanceProtection = in.InstanceProtection
+	out.SysctlParameters = in.SysctlParameters
 	return nil
 }
 

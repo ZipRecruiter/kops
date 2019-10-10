@@ -174,6 +174,8 @@ type ClusterSpec struct {
 	// specified, each parameter must follow the form variable=value, the way
 	// it would appear in sysctl.conf.
 	SysctlParameters []string `json:"sysctlParameters,omitempty"`
+	// BootstrapScripts are bootstrapping scripts that run before nodeup.
+	BootstrapScripts []BootstrapScriptSpec `json:"bootstrapScripts,omitempty"`
 }
 
 // NodeAuthorizationSpec is used to node authorization
@@ -523,4 +525,11 @@ type TerraformSpec struct {
 
 func (t *TerraformSpec) IsEmpty() bool {
 	return t.ProviderExtraConfig == nil
+}
+
+// BootstrapScriptSpec runs a bootstrapping script on the cluster.
+type BootstrapScriptSpec struct {
+	Name string `json:"name,omitempty"`
+	URL  string `json:"url,omitempty"`
+	Hash string `json:"hash,omitempty"`
 }

@@ -154,12 +154,44 @@ function download-release() {
   ( cd ${INSTALL_DIR}/bin; ./nodeup --install-systemd-unit --conf=${INSTALL_DIR}/conf/kube_env.yaml --v=8  )
 }
 
+function run-bootstrap-scripts() {
+	cat ./bootstrap_scripts.txt | while read scripturl scripthash; do
+		try-run-bootstrap-script "$scripthash" "$scripturl"
+	done
+}
+
+function try-run-bootstrap-script() {
+	local -r scripthash="$1"
+	local -r scripturls=( $(split-commas "$2") )
+	local -r scriptname="${scripturls[0]##*/}"
+
+	if [[ -n "${scripthash}" ]]; then
+		local -r scriptsha256="${scripthash}"
+	else
+		echo "Downloading ${scriptname}.sha256 (not found in env)"
+		download-or-bust "${scriptname}.sha256" "" "${scripturls[@]/%/.sha256}"
+		local -r scriptsha256=$(cat "${scriptname}.sha256")
+	fi
+
+	echo "Downloading ${scriptname} (${scripturls[@]})"
+	download-or-bust "${scriptname}" "${scriptsha256}" "${scripturls[@]}"
+
+	echo "=== Running ${scriptname} ==="
+	chmod +x "$scriptname"
+	./$scriptname
+	echo "=== Completed ${scriptname} ==="
+}
+
 ####################################################################################
 
 /bin/systemd-machine-id-setup || echo "failed to set up ensure machine-id configured"
 
 echo "== nodeup node config starting =="
 ensure-install-dir
+
+cat > bootstrap_scripts.txt << '__EOF_BOOTSTRAP_SCRIPTS'
+{{ BootstrapHooks }}
+__EOF_BOOTSTRAP_SCRIPTS
 
 {{ if CompressUserData -}}
 echo "{{ GzipBase64 ClusterSpec }}" | base64 -d | gzip -d > conf/cluster_spec.yaml
@@ -185,6 +217,7 @@ cat > conf/kube_env.yaml << '__EOF_KUBE_ENV'
 __EOF_KUBE_ENV
 {{- end }}
 
+run-bootstrap-scripts
 download-release
 echo "== nodeup node config done =="
 `
@@ -192,7 +225,6 @@ echo "== nodeup node config done =="
 // AWSNodeUpTemplate returns a MIME Multi Part Archive containing the nodeup (bootstrap) script
 // and any additional User Data passed to using AdditionalUserData in the IG Spec
 func AWSNodeUpTemplate(ig *kops.InstanceGroup) (string, error) {
-
 	userDataTemplate := NodeUpTemplate
 
 	if len(ig.Spec.AdditionalUserData) > 0 {
@@ -235,7 +267,6 @@ func AWSNodeUpTemplate(ig *kops.InstanceGroup) (string, error) {
 	}
 
 	return userDataTemplate, nil
-
 }
 
 func writeUserDataPart(mimeWriter *multipart.Writer, fileName string, contentType string, content []byte) error {

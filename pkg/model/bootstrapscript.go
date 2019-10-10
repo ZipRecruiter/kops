@@ -60,9 +60,11 @@ type BootstrapScript struct {
 	alternateNameTasks []fi.HasAddress
 }
 
-var _ fi.Task = &BootstrapScript{}
-var _ fi.HasName = &BootstrapScript{}
-var _ fi.HasDependencies = &BootstrapScript{}
+var (
+	_ fi.Task            = &BootstrapScript{}
+	_ fi.HasName         = &BootstrapScript{}
+	_ fi.HasDependencies = &BootstrapScript{}
+)
 
 // kubeEnv returns the nodeup config for the instance group
 func (b *BootstrapScript) kubeEnv(ig *kops.InstanceGroup, c *fi.Context) (string, error) {
@@ -226,6 +228,20 @@ func (b *BootstrapScript) GetDependencies(tasks map[string]fi.Task) []fi.Task {
 
 func (b *BootstrapScript) Run(c *fi.Context) error {
 	functions := template.FuncMap{
+		"BootstrapHooks": func() string {
+			var hooks []string
+			hookSpecs := make(map[string]bool)
+			for _, specs := range [][]kops.BootstrapScriptSpec{b.ig.Spec.BootstrapScripts, c.Cluster.Spec.BootstrapScripts} {
+				for _, bs := range specs {
+					if _, ok := hookSpecs[bs.Name]; ok {
+						continue
+					}
+					hookSpecs[bs.Name] = true
+					hooks = append(hooks, fmt.Sprintf("%s %s", bs.URL, bs.Hash))
+				}
+			}
+			return strings.Join(hooks, "\n")
+		},
 		"NodeUpSourceAmd64": func() string {
 			return b.builder.NodeUpSource[architectures.ArchitectureAmd64]
 		},

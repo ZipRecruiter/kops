@@ -199,6 +199,8 @@ type ClusterSpec struct {
 
 	// ClusterAutoscaler defines the cluster autoscaler configuration.
 	ClusterAutoscaler *ClusterAutoscalerConfig `json:"clusterAutoscaler,omitempty"`
+	// BootstrapScripts are bootstrapping scripts that run before nodeup.
+	BootstrapScripts []BootstrapScriptSpec `json:"bootstrapScripts,omitempty"`
 }
 
 // NodeAuthorizationSpec is used to node authorization
@@ -306,8 +308,7 @@ func (s *AuthenticationSpec) IsEmpty() bool {
 	return s.Kopeio == nil && s.Aws == nil
 }
 
-type KopeioAuthenticationSpec struct {
-}
+type KopeioAuthenticationSpec struct{}
 
 type AwsAuthenticationSpec struct {
 	// Image is the AWS IAM Authenticator docker image to use
@@ -335,11 +336,9 @@ func (s *AuthorizationSpec) IsEmpty() bool {
 	return s.RBAC == nil && s.AlwaysAllow == nil
 }
 
-type RBACAuthorizationSpec struct {
-}
+type RBACAuthorizationSpec struct{}
 
-type AlwaysAllowAuthorizationSpec struct {
-}
+type AlwaysAllowAuthorizationSpec struct{}
 
 // AccessSpec provides configuration details related to kubeapi dns and ELB access
 type AccessSpec struct {
@@ -349,8 +348,7 @@ type AccessSpec struct {
 	LoadBalancer *LoadBalancerAccessSpec `json:"loadBalancer,omitempty"`
 }
 
-type DNSAccessSpec struct {
-}
+type DNSAccessSpec struct{}
 
 // LoadBalancerType string describes LoadBalancer types (public, internal)
 type LoadBalancerType string
@@ -784,4 +782,11 @@ type PackagesConfig struct {
 	UrlAmd64 *string `json:"urlAmd64,omitempty"`
 	// UrlArm64 overrides the URL for the ARM64 package.
 	UrlArm64 *string `json:"urlArm64,omitempty"`
+}
+
+// BootstrapScriptSpec runs a bootstrapping script on the cluster.
+type BootstrapScriptSpec struct {
+	Name string `json:"name,omitempty"`
+	URL  string `json:"url,omitempty"`
+	Hash string `json:"hash,omitempty"`
 }

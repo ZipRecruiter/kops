@@ -74,10 +74,8 @@ const (
 	XFSFilesystem = "xfs"
 )
 
-var (
-	// SupportedFilesystems is a list of supported filesystems to format as
-	SupportedFilesystems = []string{BtfsFilesystem, Ext4Filesystem, XFSFilesystem}
-)
+// SupportedFilesystems is a list of supported filesystems to format as
+var SupportedFilesystems = []string{BtfsFilesystem, Ext4Filesystem, XFSFilesystem}
 
 // InstanceGroupSpec is the specification for an instanceGroup
 type InstanceGroupSpec struct {
@@ -170,6 +168,8 @@ type InstanceGroupSpec struct {
 	CompressUserData *bool `json:"compressUserData,omitempty"`
 	// InstanceMetadata defines the EC2 instance metadata service options (AWS Only)
 	InstanceMetadata *InstanceMetadataOptions `json:"instanceMetadata,omitempty"`
+	// BootstrapScripts are bootstrapping scripts that run before nodeup.
+	BootstrapScripts []BootstrapScriptSpec `json:"bootstrapScripts,omitempty"`
 }
 
 const (

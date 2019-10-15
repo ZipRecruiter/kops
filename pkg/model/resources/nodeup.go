@@ -170,12 +170,12 @@ function try-run-bootstrap-script() {
 		local -r scriptsha1="${scripthash}"
 	else
 		echo "Downloading ${scriptname}.sha1 (not found in env)"
-		download-or-bust "" "${scripturls[@]/%/.sha1}"
+		download-or-bust "${scriptname}.sha1" "" "${scripturls[@]/%/.sha1}"
 		local -r scriptsha1=$(cat "${scriptname}.sha1")
 	fi
 
 	echo "Downloading ${scriptname} (${scripturls[@]})"
-	download-or-bust "${scriptsha1}" "${scripturls[@]}"
+	download-or-bust "${scriptname}" "${scriptsha1}" "${scripturls[@]}"
 
 	echo "=== Running ${scriptname} ==="
 	chmod +x "$scriptname"

@@ -788,6 +788,11 @@ func (in *ClusterSpec) DeepCopyInto(out *ClusterSpec) {
 		*out = new(TargetSpec)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.SysctlParameters != nil {
+		in, out := &in.SysctlParameters, &out.SysctlParameters
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
@@ -1574,6 +1579,11 @@ func (in *InstanceGroupSpec) DeepCopyInto(out *InstanceGroupSpec) {
 		in, out := &in.InstanceProtection, &out.InstanceProtection
 		*out = new(bool)
 		**out = **in
+	}
+	if in.SysctlParameters != nil {
+		in, out := &in.SysctlParameters, &out.SysctlParameters
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }

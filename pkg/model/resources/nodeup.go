@@ -94,7 +94,7 @@ download-or-bust() {
         rm -f "${file}"
       else
         if [[ -n "${hash}" ]]; then
-          echo "== Downloaded ${url} (SHA1 = ${hash}) =="
+          echo "== Downloaded ${url} (SHA256 = ${hash}) =="
         else
           echo "== Downloaded ${url} =="
         fi
@@ -167,15 +167,15 @@ function try-run-bootstrap-script() {
 	local -r scriptname="${scripturls[0]##*/}"
 
 	if [[ -n "${scripthash}" ]]; then
-		local -r scriptsha1="${scripthash}"
+		local -r scriptsha256="${scripthash}"
 	else
-		echo "Downloading ${scriptname}.sha1 (not found in env)"
-		download-or-bust "${scriptname}.sha1" "" "${scripturls[@]/%/.sha1}"
-		local -r scriptsha1=$(cat "${scriptname}.sha1")
+		echo "Downloading ${scriptname}.sha256 (not found in env)"
+		download-or-bust "${scriptname}.sha256" "" "${scripturls[@]/%/.sha256}"
+		local -r scriptsha256=$(cat "${scriptname}.sha256")
 	fi
 
 	echo "Downloading ${scriptname} (${scripturls[@]})"
-	download-or-bust "${scriptname}" "${scriptsha1}" "${scripturls[@]}"
+	download-or-bust "${scriptname}" "${scriptsha256}" "${scripturls[@]}"
 
 	echo "=== Running ${scriptname} ==="
 	chmod +x "$scriptname"

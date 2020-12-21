@@ -376,6 +376,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.large",
 		MemoryGB:          4,
+		ECU:               0,
 		Cores:             2,
 		InstanceENIs:      3,
 		InstanceIPsPerENI: 10,
@@ -385,6 +386,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.xlarge",
 		MemoryGB:          8,
+		ECU:               0,
 		Cores:             4,
 		InstanceENIs:      4,
 		InstanceIPsPerENI: 15,
@@ -394,6 +396,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.2xlarge",
 		MemoryGB:          16,
+		ECU:               0,
 		Cores:             8,
 		InstanceENIs:      4,
 		InstanceIPsPerENI: 15,
@@ -403,6 +406,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.4xlarge",
 		MemoryGB:          32,
+		ECU:               0,
 		Cores:             16,
 		InstanceENIs:      8,
 		InstanceIPsPerENI: 30,
@@ -412,6 +416,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.8xlarge",
 		MemoryGB:          64,
+		ECU:               0,
 		Cores:             32,
 		InstanceENIs:      8,
 		InstanceIPsPerENI: 30,
@@ -421,6 +426,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.12xlarge",
 		MemoryGB:          96,
+		ECU:               0,
 		Cores:             48,
 		InstanceENIs:      8,
 		InstanceIPsPerENI: 30,
@@ -430,6 +436,7 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.16xlarge",
 		MemoryGB:          128,
+		ECU:               0,
 		Cores:             64,
 		InstanceENIs:      15,
 		InstanceIPsPerENI: 50,
@@ -439,10 +446,92 @@ var MachineTypes []AWSMachineTypeInfo = []AWSMachineTypeInfo{
 	{
 		Name:              "c5a.24xlarge",
 		MemoryGB:          192,
+		ECU:               0,
 		Cores:             96,
 		InstanceENIs:      15,
 		InstanceIPsPerENI: 50,
 		EphemeralDisks:    nil,
+	},
+
+	// c5ad family
+	{
+		Name:              "c5ad.large",
+		MemoryGB:          4,
+		ECU:               0,
+		Cores:             2,
+		InstanceENIs:      3,
+		InstanceIPsPerENI: 10,
+		EphemeralDisks:    []int{75},
+	},
+
+	{
+		Name:              "c5ad.xlarge",
+		MemoryGB:          8,
+		ECU:               0,
+		Cores:             4,
+		InstanceENIs:      4,
+		InstanceIPsPerENI: 15,
+		EphemeralDisks:    []int{150},
+	},
+
+	{
+		Name:              "c5ad.2xlarge",
+		MemoryGB:          16,
+		ECU:               0,
+		Cores:             8,
+		InstanceENIs:      4,
+		InstanceIPsPerENI: 15,
+		EphemeralDisks:    []int{300},
+	},
+
+	{
+		Name:              "c5ad.4xlarge",
+		MemoryGB:          32,
+		ECU:               0,
+		Cores:             16,
+		InstanceENIs:      8,
+		InstanceIPsPerENI: 30,
+		EphemeralDisks:    []int{300, 300},
+	},
+
+	{
+		Name:              "c5ad.8xlarge",
+		MemoryGB:          64,
+		ECU:               0,
+		Cores:             32,
+		InstanceENIs:      8,
+		InstanceIPsPerENI: 30,
+		EphemeralDisks:    []int{600, 600},
+	},
+
+	{
+		Name:              "c5ad.12xlarge",
+		MemoryGB:          96,
+		ECU:               0,
+		Cores:             48,
+		InstanceENIs:      8,
+		InstanceIPsPerENI: 30,
+		EphemeralDisks:    []int{900, 900},
+	},
+
+	{
+		Name:              "c5ad.16xlarge",
+		MemoryGB:          128,
+		ECU:               0,
+		Cores:             64,
+		InstanceENIs:      15,
+		InstanceIPsPerENI: 50,
+		EphemeralDisks:    []int{1200, 1200},
+	},
+
+	{
+		Name:              "c5ad.24xlarge",
+		MemoryGB:          192,
+		ECU:               0,
+		Cores:             96,
+		InstanceENIs:      15,
+		InstanceIPsPerENI: 50,
+		EphemeralDisks:    []int{1900, 1900},
 	},
 
 	// c5d family

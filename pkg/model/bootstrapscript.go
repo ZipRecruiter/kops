@@ -231,7 +231,7 @@ func (b *BootstrapScript) Run(c *fi.Context) error {
 		"BootstrapHooks": func() string {
 			var hooks []string
 			hookSpecs := make(map[string]bool)
-			for _, specs := range [][]kops.BootstrapScriptSpec{ig.Spec.BootstrapScripts, cluster.Spec.BootstrapScripts} {
+			for _, specs := range [][]kops.BootstrapScriptSpec{b.ig.Spec.BootstrapScripts, c.Cluster.Spec.BootstrapScripts} {
 				for _, bs := range specs {
 					if _, ok := hookSpecs[bs.Name]; ok {
 						continue

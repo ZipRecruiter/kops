@@ -137,6 +137,34 @@ function download-release() {
   ( cd ${INSTALL_DIR}/bin; ./nodeup --install-systemd-unit --conf=${INSTALL_DIR}/conf/kube_env.yaml --v=8  )
 }
 
+function run-bootstrap-scripts() {
+	cat ./bootstrap_scripts.txt | while read scripturl scripthash; do
+		try-run-bootstrap-script "$scripthash" "$scripturl"
+	done
+}
+
+function try-run-bootstrap-script() {
+	local -r scripthash="$1"
+	local -r scripturls=( $(split-commas "$2") )
+	local -r scriptname="${scripturls[0]##*/}"
+
+	if [[ -n "${scripthash}" ]]; then
+		local -r scriptsha256="${scripthash}"
+	else
+		echo "Downloading ${scriptname}.sha256 (not found in env)"
+		download-or-bust "${scriptname}.sha256" "" "${scripturls[@]/%/.sha256}"
+		local -r scriptsha256=$(cat "${scriptname}.sha256")
+	fi
+
+	echo "Downloading ${scriptname} (${scripturls[@]})"
+	download-or-bust "${scriptname}" "${scriptsha256}" "${scripturls[@]}"
+
+	echo "=== Running ${scriptname} ==="
+	chmod +x "$scriptname"
+	./$scriptname
+	echo "=== Completed ${scriptname} ==="
+}
+
 ####################################################################################
 
 /bin/systemd-machine-id-setup || echo "failed to set up ensure machine-id configured"
@@ -144,12 +172,17 @@ function download-release() {
 echo "== nodeup node config starting =="
 ensure-install-dir
 
+cat > bootstrap_scripts.txt << '__EOF_BOOTSTRAP_SCRIPTS'
+
+__EOF_BOOTSTRAP_SCRIPTS
+
 echo "H4sIAAAAAAAA/3xT3U7bTBC991OMkBA3iX/4E6xA+lDytURqIErpA0zssdlmPWP2x5A+fbVO0hSQemXvObO7c87ZKY2EaiJc60YBB2OSUtijZrLLwF63pKCSck32QFQqAXBr3c3YeTRGgbeBkm1Z5HQ3R/eioEbjaFg/4cqQOyBGmqnVPVkFP53wuNZmB3+jnowCzbVsgcfOxzPH0OLb2OlfdFvk7R8gbry9iP14sdiQAunJGtycjnY/Iwy1SwB6sk4LKyiu0vwyPUvWYUULK2+beHxpgvNkJ7PpUkGR5+n1ZZqneVYUkezCkl4COT9w8fZncZ6xpceerNUVKTj5D1/dSVTbDn2sr1zalDbVksWbxt1wVV+kxXmav9N6OrRiaNCJLLxpJbi74J8PhpWNldAtRbyCbOhXQrWw0usqmoiv7iBi+vB9q+HyPM3TIv+LkRY1q/0yNVKiSQCIYz5TWoWm0dzcI1eGrNsFC0C9Lr0WvkdbKWipFbtJsUdt4r6bIs/nesRSUe3ewcd7UMev+2KJbi6OR4NDn0r36LvaBKAm9MHSV/TkokMA/791ZHVL7NFMrPa6RLOQ6o5ZPPoh5KPY+dG/g4qul8PTX2D0OuvRZkavsl0c2aHgQ14ATP5V7HphQqN5/vRDwXWeFx+JB4zzE49h8pEUjpMRyGJFh7c25JRnQ1KdVDOuLU720zb79Jw6DI7UWXq6LZ8j65qc34kgXw6NWyZPLmt3rEt+AwAA//8BAAD//yusPHfrAwAA" | base64 -d | gzip -d > conf/cluster_spec.yaml
 
 echo "H4sIAAAAAAAA/6qu5QIAAAD//wEAAP//BrCh3QMAAAA=" | base64 -d | gzip -d > conf/ig_spec.yaml
 
 echo "H4sIAAAAAAAA/7RVz5PcJha+919BTZXLF7cEQiBQ+WDveNeeWo93ypucUw94aFQjQQdQzzh/fUrq6djjJAen7JPg/fz4+B56nTOW3O8IgdnJdl3sieWm49I76inlnRSWNU5r31itBSguNcqmZb59dVvKIfd1nUtMMGA1xDhMCIcxVzbO9d1iMAUsmPcJJ4SM9fl7ZBVrK1qbMdTTGJaHeuu/pUxYNhgdcuAIUnImuNeUWuNEoykFrq1mHrTnvDX4g2DYMm0wuAUmLAWmEBWnoqHWc9CipcqgaqQ1rhECmOACuEJqUEuqTCPAKePlP2EpYLmP6W5/mJZhDLm2YTyv9xvA/ZFWXSWqMvx2wthKr7luueaIyhnhlXEMm0YjaqcpCsOl5sw414mWr/AApVKqdU6qpvkDo4v3YYrgKhftHaYN4ImYXKCMdv2YCesHJX+RbX2K2jNVUVnxvcVHRJDms5icX0lpRSdpI7nmVAhrbddZ6ix2XLJGaykk+763uPZ/IibKbGOkabnj0kjjwVtFgXe845pZptF4o8CJHwTjLKbOo9UMfKdQi1Y5z6n0FG3LDYJoOqsso9Zy0FI1lnPUHbNKNA103jp031tMK8CvxeTQm8Zaq4WlqhGK84ZJq4xGikwYABDMWHSGo7fMc8294KJxTLUOwbXfLCaAZG//Vk2X05ILpg8wY09snA8Jc67wAebDhGvN3WUMfhz+BRl7MuPs1972lPUksP7L7KuQCwSLb1NcDqcuITrMTx0f44Q9+RAd7v57ktWp6/Z0hhg+zXHJr5dy2xMPU8YdIXY4JcbSk3rdT3FxNykeR4epJ3CfN+OG882H//eEUVrJtqIVo1944gxj6M/baooWVi1hWLl7g2YZhjEM7yC4CVPuSUnL2h2Poy1jDO8guY2WmD5VcIRxWvNeMkqvxxfrQX1+Yn52No4bC/9JiC/FsxfjDMOfQ8/WJ7E7QjxCWRK+hYLbz4WQfz8cMI0zhgLTZRrLaGG6ie51CHHVQgw9uViRX+wIuY25BJjxf0dMaXTYk+ev4D4/3xGyzdJG/A2sXNdHSPU0mvOs158DdoRMcXiPR5x60uwIeRyEm0371z/93BNNKfvacVLAWiZsT8d6svdgcHo8yOcJq8ZYp00Wa8zmXBf71VY9DVvtPbm42OqFa8i/LpjA4eXVm49f3Dutt5s/RHcVfILLGAqMAdPVSnNP7lSuBpvWggdYMva8ak7h1xBGj7k8koLFfvES1POjN+/sLYSwHWX/7ZNSg3Mx5NrEWHJJcNg/lqs+wTztfgcAAP//AQAA///I7JLqSwgAAA==" | base64 -d | gzip -d > conf/kube_env.yaml
 
+run-bootstrap-scripts
 download-release
 echo "== nodeup node config done =="
 

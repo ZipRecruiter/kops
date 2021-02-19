@@ -77,7 +77,7 @@ func (b *KubeAPIServerBuilder) Build(c *fi.ModelBuilderContext) error {
 				t := &nodetasks.File{
 					Path:     *encryptionConfigPath,
 					Contents: fi.NewStringResource(contents),
-					Mode:     fi.String("600"),
+					Mode:     fi.String("0600"),
 					Type:     nodetasks.FileType_File,
 				}
 				c.AddTask(t)
@@ -231,7 +231,7 @@ func (b *KubeAPIServerBuilder) writeAuthenticationConfig(c *fi.ModelBuilderConte
 				Path:     PathAuthnConfig,
 				Contents: fi.NewBytesResource(manifest),
 				Type:     nodetasks.FileType_File,
-				Mode:     fi.String("600"),
+				Mode:     fi.String("0600"),
 			})
 		}
 
@@ -265,7 +265,7 @@ func (b *KubeAPIServerBuilder) writeAuthenticationConfig(c *fi.ModelBuilderConte
 				Path:     "/srv/kubernetes/aws-iam-authenticator/cert.pem",
 				Contents: certificate,
 				Type:     nodetasks.FileType_File,
-				Mode:     fi.String("600"),
+				Mode:     fi.String("0600"),
 				Owner:    fi.String("aws-iam-authenticator"),
 				Group:    fi.String("aws-iam-authenticator"),
 			})
@@ -274,7 +274,7 @@ func (b *KubeAPIServerBuilder) writeAuthenticationConfig(c *fi.ModelBuilderConte
 				Path:     "/srv/kubernetes/aws-iam-authenticator/key.pem",
 				Contents: privateKey,
 				Type:     nodetasks.FileType_File,
-				Mode:     fi.String("600"),
+				Mode:     fi.String("0600"),
 				Owner:    fi.String("aws-iam-authenticator"),
 				Group:    fi.String("aws-iam-authenticator"),
 			})

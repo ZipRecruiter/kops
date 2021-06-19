@@ -2245,7 +2245,11 @@ spec:
                           type: object
                         type: array
                       imageName:
-                        description: The container image name to use
+                        description: ImageName is the container image name to use.
+                        type: string
+                      initImageName:
+                        description: InitImageName is the init container image name
+                          to use.
                         type: string
                     type: object
                   calico:

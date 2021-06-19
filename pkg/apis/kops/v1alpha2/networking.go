@@ -39,16 +39,13 @@ type NetworkingSpec struct {
 
 // ClassicNetworkingSpec is the specification of classic networking mode, integrated into kubernetes.
 // Support been removed since kubernetes 1.4.
-type ClassicNetworkingSpec struct {
-}
+type ClassicNetworkingSpec struct{}
 
 // KubenetNetworkingSpec is the specification for kubenet networking, largely integrated but intended to replace classic
-type KubenetNetworkingSpec struct {
-}
+type KubenetNetworkingSpec struct{}
 
 // ExternalNetworkingSpec is the specification for networking that is implemented by a user-provided Daemonset that uses the Kubenet kubelet networking plugin.
-type ExternalNetworkingSpec struct {
-}
+type ExternalNetworkingSpec struct{}
 
 // CNINetworkingSpec is the specification for networking that is implemented by a user-provided Daemonset, which uses the CNI kubelet networking plugin.
 type CNINetworkingSpec struct {
@@ -56,8 +53,7 @@ type CNINetworkingSpec struct {
 }
 
 // KopeioNetworkingSpec declares that we want Kopeio networking
-type KopeioNetworkingSpec struct {
-}
+type KopeioNetworkingSpec struct{}
 
 // WeaveNetworkingSpec declares that we want Weave networking
 type WeaveNetworkingSpec struct {
@@ -234,8 +230,7 @@ type CanalNetworkingSpec struct {
 }
 
 // KuberouterNetworkingSpec declares that we want Kube-router networking
-type KuberouterNetworkingSpec struct {
-}
+type KuberouterNetworkingSpec struct{}
 
 // RomanaNetworkingSpec declares that we want Romana networking
 // Romana is deprecated as of kops 1.18 and removed as of kops 1.19
@@ -248,8 +243,10 @@ type RomanaNetworkingSpec struct {
 
 // AmazonVPCNetworkingSpec declares that we want Amazon VPC CNI networking
 type AmazonVPCNetworkingSpec struct {
-	// The container image name to use
+	// ImageName is the container image name to use.
 	ImageName string `json:"imageName,omitempty"`
+	// InitImageName is the init container image name to use.
+	InitImageName string `json:"initImageName,omitempty"`
 	// Env is a list of environment variables to set in the container.
 	Env []EnvVar `json:"env,omitempty"`
 }
@@ -511,5 +508,4 @@ type LyftVPCNetworkingSpec struct {
 }
 
 // GCENetworkingSpec is the specification of GCE's native networking mode, using IP aliases
-type GCENetworkingSpec struct {
-}
+type GCENetworkingSpec struct{}
